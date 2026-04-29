@@ -8,32 +8,34 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    static String ruta = "C:\\Users\\Techie18_Mañana\\Programación\\intellij java\\ClientesMulti\\Clientes_LF.txt";
+    static String ruta = "Clientes_LF.txt";
     public static void main(String[] args) {
         File fichero = new File(ruta);
     }
+    static void ScannerFichero() {
+            File fichero = new File(ruta);
 
-    static void ScannerFichero () {
-        Scanner sFi = null;
-        File fichero = new File(ruta);
-        ArrayList<Cliente> listaClientes = new ArrayList<>();
-        try {
-            sFi = new Scanner(fichero);
-            while (sFi.hasNextLine()) {
-                String linea = sFi.nextLine();
-                String [] trozos = linea.split(";");
-                listaClientes.add(new Cliente(trozos[0],trozos[1],trozos[2],Integer.parseInt(trozos[3]),Double.parseDouble(trozos[4].replace(',','.')),trozos[5],trozos[6],
-                        trozos[7],trozos[8],trozos[9],trozos[10],trozos[11],trozos.length == 13 ? trozos[12]: ""));
+            try (Scanner sFi = new Scanner(fichero)) {
+                ArrayList<Cliente> listaClientes = new ArrayList<>();
+
+                while (sFi.hasNextLine()) {
+                    String linea = sFi.nextLine();
+                    String[] trozos = linea.split(";");
+
+                    listaClientes.add(new Cliente(
+                            trozos[0], trozos[1], trozos[2],
+                            Integer.parseInt(trozos[3]),
+                            Double.parseDouble(trozos[4].replace(',', '.')),
+                            trozos[5], trozos[6], trozos[7], trozos[8],
+                            trozos[9], trozos[10], trozos[11],
+                            trozos.length == 13 ? trozos[12] : ""
+                    ));
+                }
+            } catch (FileNotFoundException e) {
+                System.out.println("No se encontró el archivo en: " + fichero.getAbsolutePath());
+            } catch (NumberFormatException e) {
+                System.out.println("Error en el formato de números (antigüedad o facturación)");
             }
-        } catch (FileNotFoundException e) {
-            throw  new RuntimeException(e);
-        } catch (NumberFormatException e){
-            System.out.println("Parametro de antiguedad o facturacion no se ha podido convertir al tipo correcto");
-        } finally {
-            if (sFi != null) {
-                sFi.close();
-            }
-        }
 
     }
 
