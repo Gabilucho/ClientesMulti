@@ -10,9 +10,9 @@ import java.util.Scanner;
 public class Main {
     static String ruta = "Clientes_LF.txt";
     public static void main(String[] args) {
-        File fichero = new File(ruta);
+        ScannerFichero(ruta);
     }
-    static void ScannerFichero() {
+    static void ScannerFichero(String ruta) {
             File fichero = new File(ruta);
 
             try (Scanner sFi = new Scanner(fichero)) {
