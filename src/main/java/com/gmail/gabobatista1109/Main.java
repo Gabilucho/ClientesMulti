@@ -1,9 +1,6 @@
 package com.gmail.gabobatista1109;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -37,6 +34,37 @@ public class Main {
                 System.out.println("Error en el formato de números (antigüedad o facturación)");
             }
 
+    }
+
+
+    static ArrayList<Cliente> BufferedReaderClientes (String ruta) {
+        ArrayList<Cliente> listaClientes = new ArrayList<>();
+        try (BufferedReader in = new BufferedReader(new FileReader(ruta));) {
+
+            String linea;
+
+
+           while ((linea = in.readLine()) != null) {
+               if (linea.trim().isEmpty()) continue;
+
+
+               String[] trozos = linea.split(";");
+
+               listaClientes.add(new Cliente(
+                       trozos[0], trozos[1], trozos[2],
+                       Integer.parseInt(trozos[3]),
+                       Double.parseDouble(trozos[4].replace(',', '.')),
+                       trozos[5], trozos[6], trozos[7], trozos[8],
+                       trozos[9], trozos[10], trozos[11],
+                       trozos.length == 13 ? trozos[12] : ""
+               ));
+           }
+        } catch (NumberFormatException e) {
+            System.out.println("Error de formato");
+        } catch (Exception e) {
+            System.out.println("Error al leer el archivo");
+        }
+        return listaClientes;
     }
 
 
