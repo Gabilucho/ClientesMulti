@@ -67,6 +67,14 @@ public class Main {
         return listaClientes;
     }
 
+    static ArrayList<Cliente> procesarDatos (String texto) {
+        if (texto == null || texto.isEmpty()) {
+            System.out.println("No hat datos para procesar.");
+            return null;
+        }
+       return null; //o String[] trozos = linea.split(";");
+    }
+
 
     static String Menu = "***** Métodos de lectura de fichero de texto *****" +
             "\n1. Scanner" +
