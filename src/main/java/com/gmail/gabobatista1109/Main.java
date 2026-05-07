@@ -5,73 +5,87 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    static String ruta = "C:\\Users\\Techie18_Mañana\\Programación\\intellij java\\ClientesMulti\\Clientes_LF.txt";
+    static String ruta = "Clientes_LF.txt";
+    static File fichero = new File(ruta);
+
     public static void main(String[] args) {
-        File fichero = new File(ruta);
+        ;
+        System.out.println("funciono");
+        ArrayList<Cliente> clientes = scannerFichero();
+        for (Cliente c : clientes) {
+            System.out.println(c); // llama a toString() automáticamente
+        }
     }
 
-    static void ScannerFichero () {
-        Scanner sFi = null;
-        File fichero = new File(ruta);
-        ArrayList<Cliente> listaClientes = new ArrayList<>();
-        try {
-            sFi = new Scanner(fichero);
+    static ArrayList<Cliente> scannerFichero() {
+
+        StringBuilder sb = new StringBuilder();
+        try (Scanner sFi = new Scanner(fichero)) {
             while (sFi.hasNextLine()) {
-                String linea = sFi.nextLine();
-                String [] trozos = linea.split(";");
-                listaClientes.add(new Cliente(trozos[0],trozos[1],trozos[2],Integer.parseInt(trozos[3]),Double.parseDouble(trozos[4].replace(',','.')),trozos[5],trozos[6],
-                        trozos[7],trozos[8],trozos[9],trozos[10],trozos[11],trozos.length == 13 ? trozos[12]: ""));
+                sb.append(sFi.nextLine()).append("\n");
             }
         } catch (FileNotFoundException e) {
-            throw  new RuntimeException(e);
-        } catch (NumberFormatException e){
-            System.out.println("Parametro de antiguedad o facturacion no se ha podido convertir al tipo correcto");
-        } finally {
-            if (sFi != null) {
-                sFi.close();
-            }
+            System.out.println("No se encontró el archivo en: " + fichero.getAbsolutePath());
+        } catch (NumberFormatException e) {
+            System.out.println("Error en el formato de números (antigüedad o facturación)");
         }
+
+        return procesarDatos(sb);
 
     }
 
 
-    static ArrayList<Cliente> BufferedReaderClientes (String ruta) {
-        ArrayList<Cliente> listaClientes = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new FileReader(ruta));) {
+    static ArrayList<Cliente> bufferedReaderClientes() {
+        StringBuilder sb = new StringBuilder();
 
+        try (BufferedReader in = new BufferedReader(new FileReader(fichero))) {
             String linea;
-
-
-           while ((linea = in.readLine()) != null) {
-               if (linea.trim().isEmpty()) continue;
-
-
-               String[] trozos = linea.split(";");
-
-               listaClientes.add(new Cliente(
-                       trozos[0], trozos[1], trozos[2],
-                       Integer.parseInt(trozos[3]),
-                       Double.parseDouble(trozos[4].replace(',', '.')),
-                       trozos[5], trozos[6], trozos[7], trozos[8],
-                       trozos[9], trozos[10], trozos[11],
-                       trozos.length == 13 ? trozos[12] : ""
-               ));
-           }
-        } catch (NumberFormatException e) {
-            System.out.println("Error de formato");
-        } catch (Exception e) {
-            System.out.println("Error al leer el archivo");
+            while ((linea = in.readLine()) != null) {
+                if (linea.trim().isEmpty()) continue; // salta líneas vacías
+                sb.append(linea).append("\n");         // acumula con salto de línea
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo: " + e.getMessage());
+            return new ArrayList<>();
         }
+
+        return procesarDatos(sb);
+
+
+    }
+
+    static ArrayList<Cliente> procesarDatos(StringBuilder texto) {
+        ArrayList<Cliente> listaClientes = new ArrayList<>();
+        if (texto == null || texto.isEmpty()) {
+            System.out.println("No hay datos para procesar.");
+            return listaClientes;
+        }
+
+
+        String[] lineas = texto.toString().split("\n");
+
+        for (String linea : lineas) {
+            if (linea.trim().isEmpty()) continue;
+
+            String[] trozos = linea.split(";");
+
+            try {
+                listaClientes.add(new Cliente(
+                        trozos[0], trozos[1], trozos[2],
+                        Integer.parseInt(trozos[3].trim()),
+                        Double.parseDouble(trozos[4].replace(',', '.')),
+                        trozos[5], trozos[6], trozos[7], trozos[8],
+                        trozos[9], trozos[10], trozos[11],
+                        trozos.length >= 13 ? trozos[12] : ""
+                ));
+            } catch (NumberFormatException e) {
+                System.out.println("Error de formato numérico en línea: " + linea);
+            }
+        }
+
         return listaClientes;
     }
 
-    static ArrayList<Cliente> procesarDatos (String texto) {
-        if (texto == null || texto.isEmpty()) {
-            System.out.println("No hat datos para procesar.");
-            return null;
-        }
-       return null; //o String[] trozos = linea.split(";");
-    }
 
 
     static String Menu = "***** Métodos de lectura de fichero de texto *****" +

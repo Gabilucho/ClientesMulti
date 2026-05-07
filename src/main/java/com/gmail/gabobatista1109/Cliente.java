@@ -134,4 +134,22 @@ public class Cliente {
     public void setFax(String fax) {
         this.fax = fax;
     }
+
+    @Override
+    public String toString() {
+        return  "ID: "           + idCliente      + "\n" +
+                "Compañía: "     + nombreCompania + "\n" +
+                "Contacto: "     + nombreContacto + "\n" +
+                "Cargo: "        + cargoContacto  + "\n" +
+                "Antigüedad: "   + antiguedad     + " años\n" +
+                "Facturación: "  + facturacion    + " €\n" +
+                "Dirección: "    + direccion      + "\n" +
+                "Ciudad: "       + ciudad         + "\n" +
+                "Región: "       + region         + "\n" +
+                "Cód. Postal: "  + codPostal      + "\n" +
+                "País: "         + pais           + "\n" +
+                "Teléfono: "     + telefono       + "\n" +
+                "Fax: "          + fax            + "\n" +
+                "-----------------------------";  // separador entre clientes
+    }
 }
