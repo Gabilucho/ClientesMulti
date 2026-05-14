@@ -1,142 +1,276 @@
 package com.gmail.gabobatista1109;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.text.NumberFormat;
+import java.util.*;
 
 public class Main {
-    static String ruta = "Clientes_LF.txt";
-    static File fichero = new File(ruta);
+
+    private static ArrayList<Cliente> clientes = null;
+    private static Configuracion configuracion;
+    private static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        ;
-        System.out.println("funciono");
-        ArrayList<Cliente> clientes = scannerFichero();
-        for (Cliente c : clientes) {
-            System.out.println(c); // llama a toString() automáticamente
+        configuracion = new Configuracion();
+
+        if (args != null && args.length > 0) {
+            System.out.println("Tomando ruta del parámetro de entrada...");
+            configuracion.setValor("default_location", args[0]);
+        } else {
+            System.out.println("Fichero de configuración leído...");
+            System.out.println("Tomando ruta del fichero de configuración...");
+            System.out.println("Ruta: " + configuracion.getValor("default_location"));
+        }
+
+        menuPrincipal();
+        sc.close();
+    }
+
+    public static void menuPrincipal() {
+        boolean salir = false;
+
+        while (!salir) {
+            String caracter = configuracion.getValor("menu_character");
+            String separador = caracter.repeat(5);
+            System.out.println("\n" + separador + " Menú Principal " + separador);
+            System.out.println("1. Scanner");
+            System.out.println("2. FileReader");
+            System.out.println("3. BufferedReader");
+            System.out.println("4. Emitir Informes");
+            System.out.println("5. Configuración");
+            System.out.println("6. Salir");
+            System.out.print("Escribe número de opción y pulsa Intro: ");
+
+            int opcion = leerEntero(1, 6);
+
+            switch (opcion) {
+                case 1:
+                    cargarClientes(1);
+                    break;
+                case 2:
+                    cargarClientes(2);
+                    break;
+                case 3:
+                    cargarClientes(3);
+                    break;
+                case 4:
+                    menuInformes();
+                    break;
+                case 5:
+                    menuConfiguracion();
+                    break;
+                case 6:
+                    salir = true;
+                    System.out.println("Hasta luego.");
+                    break;
+            }
         }
     }
 
-    static ArrayList<Cliente> scannerFichero() {
+    private static void cargarClientes(int metodo) {
+        String ruta = configuracion.getValor("default_location");
+        ArrayList<Cliente> resultado;
 
-        StringBuilder sb = new StringBuilder();
-        try (Scanner sFi = new Scanner(fichero)) {
-            while (sFi.hasNextLine()) {
-                sb.append(sFi.nextLine()).append("\n");
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("No se encontró el archivo en: " + fichero.getAbsolutePath());
-        } catch (NumberFormatException e) {
-            System.out.println("Error en el formato de números (antigüedad o facturación)");
-        }
-
-        return procesarDatos(sb);
-
-    }
-
-
-    static ArrayList<Cliente> bufferedReaderClientes() {
-        StringBuilder sb = new StringBuilder();
-
-        try (BufferedReader in = new BufferedReader(new FileReader(fichero))) {
-            String linea;
-            while ((linea = in.readLine()) != null) {
-                if (linea.trim().isEmpty()) continue; // salta líneas vacías
-                sb.append(linea).append("\n");         // acumula con salto de línea
-            }
-        } catch (IOException e) {
-            System.out.println("Error al leer el archivo: " + e.getMessage());
-            return new ArrayList<>();
-        }
-
-        return procesarDatos(sb);
-
-
-    }
-
-    static ArrayList<Cliente> procesarDatos(StringBuilder texto) {
-        ArrayList<Cliente> listaClientes = new ArrayList<>();
-        if (texto == null || texto.isEmpty()) {
-            System.out.println("No hay datos para procesar.");
-            return listaClientes;
-        }
-
-
-        String[] lineas = texto.toString().split("\n");
-
-        for (String linea : lineas) {
-            if (linea.trim().isEmpty()) continue;
-
-            String[] trozos = linea.split(";");
-
-            try {
-                listaClientes.add(new Cliente(
-                        trozos[0], trozos[1], trozos[2],
-                        Integer.parseInt(trozos[3].trim()),
-                        Double.parseDouble(trozos[4].replace(',', '.')),
-                        trozos[5], trozos[6], trozos[7], trozos[8],
-                        trozos[9], trozos[10], trozos[11],
-                        trozos.length >= 13 ? trozos[12] : ""
-                ));
-            } catch (NumberFormatException e) {
-                System.out.println("Error de formato numérico en línea: " + linea);
-            }
-        }
-
-        return listaClientes;
-    }
-
-
-
-    static String Menu = "***** Métodos de lectura de fichero de texto *****" +
-            "\n1. Scanner" +
-            "\n2. FileReader" +
-            "\n3.BufferReader" +
-            "\n4.Emitir Informe" +
-            "\n5. Salir";
-
-
-    public static int verificarNumero () {
-        Scanner sc = new Scanner(System.in);
-        int numero = 0;
-        while (true) {
-            if (sc.hasNextInt()) {
-                numero = sc.nextInt();
-            }
-            if (numero >= 1 && numero <= 5) {
+        switch (metodo) {
+            case 1:
+                resultado = LectorFicheros.cargarClientesConScanner(ruta);
                 break;
-            }
-            else {
-                sc.next();
-            }
-            System.out.println("Error. Introduce solo una de las cuatro opciones (1,2,3,4 o 5)");
+            case 2:
+                resultado = LectorFicheros.cargarClientesConFileReader(ruta);
+                break;
+            case 3:
+            default:
+                resultado = LectorFicheros.cargarClientesConBufferedReader(ruta);
+                break;
         }
-        return numero ;
+
+        if (resultado.isEmpty()) {
+            System.out.println("No se encontró el fichero o no contiene datos: " + ruta);
+        } else {
+            clientes = resultado;
+            System.out.println("Clientes leídos: " + clientes.size());
+        }
     }
 
-    static Scanner lectorFicheroScanner (String ruta) throws FileNotFoundException {
+    private static void menuInformes() {
+        if (clientes == null || clientes.isEmpty()) {
+            System.out.println("No se puede generar ningún informe porque no se dispone de información de clientes");
+            return;
+        }
+
+        boolean volver = false;
+        while (!volver) {
+            String caracter = configuracion.getValor("menu_character");
+            String separador = caracter.repeat(5);
+            System.out.println("\n" + separador + " Emitir Informes " + separador);
+            System.out.println("1. Ordenado por Facturación descendente.");
+            System.out.println("2. Ordenado por Nombre de Contacto ascendente.");
+            System.out.println("3. Menú anterior");
+            System.out.print("Escribe número de opción y pulsa Intro: ");
+
+            int opcion = leerEntero(1, 3);
+
+            switch (opcion) {
+                case 1:
+                    generarInformes(true);
+                    break;
+                case 2:
+                    generarInformes(false);
+                    break;
+                case 3:
+                    volver = true;
+                    break;
+            }
+        }
+    }
+
+    private static void generarInformes(boolean porFacturacion) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(generarInformePais("España", porFacturacion));
+        sb.append(generarInformePais("Alemania", porFacturacion));
+
+        boolean guardar = "true".equalsIgnoreCase(configuracion.getValor("save_report"));
+
+        if (guardar) {
+            String rutaInforme = configuracion.getValor("file_report");
+            try (PrintWriter pw = new PrintWriter(new FileWriter(rutaInforme, false))) {
+                pw.print(sb.toString());
+                System.out.println("Informe guardado en: " + rutaInforme);
+            } catch (IOException e) {
+                System.err.println("Error al guardar el informe: " + e.getMessage());
+            }
+        } else {
+            System.out.print(sb.toString());
+        }
+    }
+
+    private static String generarInformePais(String pais, boolean porFacturacion) {
+        ArrayList<Cliente> filtrados = new ArrayList<>();
+        for (Cliente c : clientes) {
+            if (pais.equalsIgnoreCase(c.getPais())) {
+                filtrados.add(c);
+            }
+        }
+
+        for (int i = 0; i < filtrados.size() - 1; i++) {
+            for (int j = 0; j < filtrados.size() - 1 - i; j++) {
+                Cliente a = filtrados.get(j);
+                Cliente b = filtrados.get(j + 1);
+                boolean intercambiar;
+                if (porFacturacion) {
+                    intercambiar = a.getFacturacion() < b.getFacturacion();
+                } else {
+                    intercambiar = a.getNombreContacto().compareTo(b.getNombreContacto()) > 0;
+                }
+                if (intercambiar) {
+                    filtrados.set(j, b);
+                    filtrados.set(j + 1, a);
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Informe - ").append(pais).append("\n");
+        double totalFacturacion = 0;
+
+        for (int i = 0; i < filtrados.size(); i++) {
+            Cliente c = filtrados.get(i);
+            String etiqueta = "Alemania".equalsIgnoreCase(pais)
+                    ? "Registro " + (i + 1) + " (Alemania)"
+                    : "Registro " + (i + 1);
+
+            sb.append(etiqueta).append("\n");
+            sb.append("  Id. Cliente: ").append(c.getId()).append("\n");
+            sb.append("  Nombre Contacto: ").append(c.getNombreContacto()).append("\n");
+            sb.append("  Antigüedad: ").append(c.getAntiguedad()).append("\n");
+            sb.append("  Facturación: ").append(c.getFacturacion()).append("\n");
+            sb.append("  Nombre Compañía: ").append(c.getNombreEmpresa()).append("\n");
+            sb.append("  Nombre Ciudad: ").append(c.getCiudad()).append("\n");
+            totalFacturacion += c.getFacturacion();
+        }
+
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("es", "ES"));
+        nf.setMinimumFractionDigits(2);
+        nf.setMaximumFractionDigits(2);
+
+        sb.append(" Total clientes: ").append(filtrados.size()).append("\n");
+        sb.append(" Total facturación (€): ").append(nf.format(totalFacturacion)).append("\n");
+
+        return sb.toString();
+    }
+
+    private static void menuConfiguracion() {
+        Configuracion temporal = new Configuracion();
+        temporal.setValor("default_location", configuracion.getValor("default_location"));
+        temporal.setValor("menu_character",   configuracion.getValor("menu_character"));
+        temporal.setValor("save_report",      configuracion.getValor("save_report"));
+        temporal.setValor("file_report",      configuracion.getValor("file_report"));
+
+        String[] claves    = {"default_location", "file_report", "menu_character", "save_report"};
+        String[] etiquetas = {"DEFAULT_LOCATION", "FILE_REPORT", "MENU_CHARACTER", "SAVE_REPORT"};
+
+        boolean salir = false;
+        while (!salir) {
+            String caracter = configuracion.getValor("menu_character");
+            String separador = caracter.repeat(5);
+            System.out.println("\n" + separador + " Menú Configuración " + separador);
+
+            for (int i = 0; i < claves.length; i++) {
+                System.out.println((i + 1) + ". " + etiquetas[i] + " : " + temporal.getValor(claves[i]));
+            }
+            System.out.println((claves.length + 1) + ". Guardar nueva configuración y regresar al menú principal");
+            System.out.println((claves.length + 2) + ". Volver al Menú Principal sin guardar nueva configuración");
+            System.out.print("Escribe número de opción y pulsa Intro: ");
+
+            int opcion = leerEntero(1, claves.length + 2);
+
+            if (opcion >= 1 && opcion <= claves.length) {
+                String clave    = claves[opcion - 1];
+                String etiqueta = etiquetas[opcion - 1];
+                System.out.print("Escriba el nuevo valor de la variable de configuración (" + etiqueta + "): ");
+                String nuevoValor = sc.nextLine().trim();
+                temporal.setValor(clave, nuevoValor);
+
+            } else if (opcion == claves.length + 1) {
+                System.out.println("GRABANDO NUEVA CONFIGURACIÓN...");
+                for (String clave : claves) {
+                    configuracion.setValor(clave, temporal.getValor(clave));
+                }
+                configuracion.guardarEnFichero();
+                salir = true;
+
+            } else {
+                System.out.println("MENÚ ANTERIOR SIN GRABAR CONFIGURACIÓN...");
+                salir = true;
+            }
+        }
+    }
+
+    static Scanner lectorFicheroScanner(String ruta) throws FileNotFoundException {
         return new Scanner(new File(ruta));
     }
 
-    static FileReader lectorFicheroFilereader (String ruta) throws FileNotFoundException {
+    static FileReader lectorFicheroFilereader(String ruta) throws FileNotFoundException {
         return new FileReader(ruta);
     }
 
-    static BufferedReader lectorFicheroBufferReader (String ruta) throws FileNotFoundException {
-        return new BufferedReader (new FileReader(ruta));
+    static BufferedReader lectorFicheroBufferReader(String ruta) throws FileNotFoundException {
+        return new BufferedReader(new FileReader(ruta));
     }
 
-
-    public static void MenuPrincipal () {
-        System.out.println(Menu);
-
-        boolean salir = false;
-
-
-
-
+    private static int leerEntero(int min, int max) {
+        while (true) {
+            String linea = sc.nextLine().trim();
+            try {
+                int numero = Integer.parseInt(linea);
+                if (numero >= min && numero <= max) {
+                    return numero;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+            System.out.printf("Opción no válida. Introduce un número entre %d y %d: ", min, max);
         }
     }
-
+}
 
 

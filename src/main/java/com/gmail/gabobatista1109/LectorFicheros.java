@@ -83,8 +83,8 @@ public class LectorFicheros {
      * @param ruta La ruta del fichero a leer.
      * @return Una lista de {@link Cliente} cargados desde el fichero.
      */
-    public static List<Cliente> cargarClientesConScanner(String ruta) {
-        List<Cliente> clientes = new ArrayList<>();
+    public static ArrayList<Cliente> cargarClientesConScanner(String ruta) {
+        ArrayList<Cliente> clientes = new ArrayList<>();
         try (Scanner scanner = lectorFicheroScanner(ruta)) {
             while (scanner.hasNextLine()) {
                 Cliente cliente = parseLinea(scanner.nextLine());
@@ -105,8 +105,8 @@ public class LectorFicheros {
      * @param ruta La ruta del fichero a leer.
      * @return Una lista de {@link Cliente} cargados.
      */
-    public static List<Cliente> cargarClientesConFileReader(String ruta) {
-        List<Cliente> clientes = new ArrayList<>();
+    public static ArrayList<Cliente> cargarClientesConFileReader(String ruta) {
+        ArrayList<Cliente> clientes = new ArrayList<>();
         File file = new File(ruta);
         if (!file.exists()) {
             System.err.println("No se encontró el fichero: " + ruta);
@@ -136,8 +136,8 @@ public class LectorFicheros {
      * @param ruta La ruta del fichero a leer.
      * @return Una lista de {@link Cliente} cargados.
      */
-    public static List<Cliente> cargarClientesConBufferedReader(String ruta) {
-        List<Cliente> clientes = new ArrayList<>();
+    public static ArrayList<Cliente> cargarClientesConBufferedReader(String ruta) {
+        ArrayList<Cliente> clientes = new ArrayList<>();
         try (BufferedReader br = lectorFicheroBufferReader(ruta)) {
             String linea;
             while ((linea = br.readLine()) != null) {
