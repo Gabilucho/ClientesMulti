@@ -3,7 +3,6 @@ package com.gmail.gabobatista1109;
 import java.io.*;
 
 /**
- * Gestiona la configuración de la aplicación, permitiendo la persistencia de las preferencias del usuario.
  * La configuración se guarda en un fichero binario en el directorio home del usuario.
  */
 public class Configuracion {
@@ -68,7 +67,6 @@ public class Configuracion {
 
     /**
      * Guarda la configuración actual en el fichero binario.
-     * Cada opción se guarda como un par clave-valor en formato UTF.
      */
     public void guardarEnFichero() {
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(RUTA_ARCHIVO))) {
@@ -85,7 +83,7 @@ public class Configuracion {
     /**
      * Recupera el valor de una opción de configuración específica.
      *
-     * @param clave La clave de la configuración solicitada (p. ej., "default_location").
+     * @param clave La clave de la configuración solicitada.
      * @return El valor de la configuración como {@code String}, o {@code null} si la clave no es válida.
      */
     public String getValor(String clave) {
