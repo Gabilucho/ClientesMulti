@@ -4,12 +4,20 @@ import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
 
+/**
+ * Clase principal que gestiona un menú para cargar y procesar datos de clientes
+ * desde un fichero. Permite la configuración de la aplicación y la generación
+ * de informes.
+ */
 public class Main {
 
     private static ArrayList<Cliente> clientes = null;
     private static Configuracion configuracion;
     private static final Scanner sc = new Scanner(System.in);
 
+    /**
+     * Punto de entrada de la aplicación. Inicializa la configuración y muestra el menú principal.
+     */
     public static void main(String[] args) {
         configuracion = new Configuracion();
 
@@ -26,6 +34,9 @@ public class Main {
         sc.close();
     }
 
+    /**
+     * Muestra el menú principal y gestiona las opciones del usuario.
+     */
     public static void menuPrincipal() {
         boolean salir = false;
 
@@ -67,6 +78,10 @@ public class Main {
         }
     }
 
+    /**
+     * Carga los clientes desde un fichero utilizando uno de los tres métodos disponibles.
+     * @param metodo El metodo de lectura a utilizar (1: Scanner, 2: FileReader, 3: BufferedReader).
+     */
     private static void cargarClientes(int metodo) {
         String ruta = configuracion.getValor("default_location");
         ArrayList<Cliente> resultado;
@@ -92,6 +107,9 @@ public class Main {
         }
     }
 
+    /**
+     * Muestra el menú de informes y gestiona las opciones del usuario.
+     */
     private static void menuInformes() {
         if (clientes == null || clientes.isEmpty()) {
             System.out.println("No se puede generar ningún informe porque no se dispone de información de clientes");
@@ -124,6 +142,10 @@ public class Main {
         }
     }
 
+    /**
+     * Genera los informes de clientes para España y Alemania.
+     * @param porFacturacion true para ordenar por facturación, false para ordenar por nombre de contacto.
+     */
     private static void generarInformes(boolean porFacturacion) {
         StringBuilder sb = new StringBuilder();
         sb.append(generarInformePais("España", porFacturacion));
@@ -144,6 +166,12 @@ public class Main {
         }
     }
 
+    /**
+     * Genera un informe para un país específico.
+     * @param pais El país para el que se genera el informe.
+     * @param porFacturacion true para ordenar por facturación, false para ordenar por nombre de contacto.
+     * @return El informe como una cadena de texto.
+     */
     private static String generarInformePais(String pais, boolean porFacturacion) {
         ArrayList<Cliente> filtrados = new ArrayList<>();
         for (Cliente c : clientes) {
@@ -199,6 +227,9 @@ public class Main {
         return sb.toString();
     }
 
+    /**
+     * Muestra el menú de configuración y permite modificar los parámetros.
+     */
     private static void menuConfiguracion() {
         Configuracion temporal = new Configuracion();
         temporal.setValor("default_location", configuracion.getValor("default_location"));
@@ -246,18 +277,12 @@ public class Main {
         }
     }
 
-    static Scanner lectorFicheroScanner(String ruta) throws FileNotFoundException {
-        return new Scanner(new File(ruta));
-    }
-
-    static FileReader lectorFicheroFilereader(String ruta) throws FileNotFoundException {
-        return new FileReader(ruta);
-    }
-
-    static BufferedReader lectorFicheroBufferReader(String ruta) throws FileNotFoundException {
-        return new BufferedReader(new FileReader(ruta));
-    }
-
+    /**
+     * Lee un número entero del usuario dentro de un rango especificado.
+     * @param min El valor mínimo permitido.
+     * @param max El valor máximo permitido.
+     * @return El número entero leído.
+     */
     private static int leerEntero(int min, int max) {
         while (true) {
             String linea = sc.nextLine().trim();
@@ -272,5 +297,3 @@ public class Main {
         }
     }
 }
-
-

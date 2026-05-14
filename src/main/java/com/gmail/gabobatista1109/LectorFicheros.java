@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class LectorFicheros {
 
     /**
-     * Crea un {@link Scanner} para el fichero indicado, permitiendo una lectura cómoda línea a línea.
+     * Crea un {@link Scanner} para el fichero indicado, permitiendo una lectura de línea a línea.
      *
      * @param ruta La ruta del fichero a leer.
      * @return Un {@code Scanner} para el fichero.
@@ -24,7 +24,7 @@ public class LectorFicheros {
     }
 
     /**
-     * Crea un {@link FileReader} para el fichero indicado, útil para lecturas de caracteres.
+     * Crea un {@link FileReader} para el fichero.
      *
      * @param ruta La ruta del fichero a leer.
      * @return Un {@code FileReader} para el fichero.
@@ -35,7 +35,7 @@ public class LectorFicheros {
     }
 
     /**
-     * Crea un {@link BufferedReader} para el fichero, optimizado para la lectura eficiente de líneas de texto.
+     * Crea un {@link BufferedReader} para el fichero.
      *
      * @param ruta La ruta del fichero a leer.
      * @return Un {@code BufferedReader} para el fichero.
@@ -78,7 +78,6 @@ public class LectorFicheros {
 
     /**
      * Carga la lista de clientes desde el fichero utilizando un {@link Scanner}.
-     * Este método es sencillo y adecuado para ficheros de tamaño moderado.
      *
      * @param ruta La ruta del fichero a leer.
      * @return Una lista de {@link Cliente} cargados desde el fichero.
@@ -100,7 +99,6 @@ public class LectorFicheros {
 
     /**
      * Carga la lista de clientes desde el fichero utilizando un {@link FileReader}.
-     * Este método lee el fichero carácter a carácter, lo cual puede ser menos eficiente para ficheros grandes.
      *
      * @param ruta La ruta del fichero a leer.
      * @return Una lista de {@link Cliente} cargados.
@@ -131,7 +129,6 @@ public class LectorFicheros {
 
     /**
      * Carga la lista de clientes desde el fichero utilizando un {@link BufferedReader}.
-     * Este es el método más eficiente para leer ficheros de texto grandes línea por línea.
      *
      * @param ruta La ruta del fichero a leer.
      * @return Una lista de {@link Cliente} cargados.
